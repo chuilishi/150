@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// movers中的哪个物体是root obj
     /// </summary>
-    public int centerIndex;
+    public int centerIndex = 0;
     /// <summary>
     /// 目前正在选择的物体(预备成为下一个root)
     /// </summary>
@@ -19,26 +19,36 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            for (int i = 0; i < movers.Count; i++)
+            centerIndex = activeIndex;
+            for (int p = centerIndex, q = centerIndex; p >= 0 || q < movers.Count; --p, ++q)
             {
-                if (i < centerIndex)
+                if (p >= 0)
                 {
-                    movers[i].parent = movers[i + 1];
+                    movers[p].parent = movers[p + 1];
                 }
-                else if (i == centerIndex)
+                if (q < movers.Count)
                 {
-                    movers[i].parent = GameObjectUtility.BaseMoverObj;
-                }
-                else
-                {
-                    
+                    movers[q].parent = movers[q - 1];
                 }
             }
         }
     }
-
     private void FixedUpdate()
     {
-        
+        var parentPos = Vector3.zero;
+        movers[centerIndex].Move(movers[centerIndex].transform.position,ref parentPos);
+        Vector3 pParent = parentPos;
+        Vector3 qParent = parentPos;
+        for (int p = centerIndex, q = centerIndex; p >= 0 || q < movers.Count; --p, ++q)
+        {
+            if (p >= 0)
+            {
+                movers[p].Move(pParent,ref pParent);
+            }
+            if (q < movers.Count)
+            {
+                movers[q].Move(qParent,ref qParent);
+            }
+        }
     }
 }

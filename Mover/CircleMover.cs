@@ -26,14 +26,12 @@ public class CircleMover : BaseMover
     protected override void Start()
     {
         stepLength = 2 / 50f / period;
-        StartMoving();
-        base.Start();
     }
 
-    protected override void Move()
+    public override void Move(Vector3 parentPos,ref Vector3 outPos)
     {
-        base.Move();
-        transform.position = parent.transform.position + new Vector3(Mathf.Sin(t*Mathf.PI)*radius, Mathf.Cos(t*Mathf.PI)*radius);
+        if (!IsMoving)return;
+        outPos = transform.position = parent.transform.position + new Vector3(Mathf.Sin(t*Mathf.PI)*radius, Mathf.Cos(t*Mathf.PI)*radius);
         t += stepLength;
     }
 }
