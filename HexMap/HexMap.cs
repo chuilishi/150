@@ -29,12 +29,12 @@ public class HexMap : MonoBehaviour
     };
     //Edge Length of every Grid
     public float size;
-    private static float innerRadius = 0.866025f/2;
-    private static float outerRadius = 1f/2;
+    public static float innerRadius = 0.866025f/2;
+    public static float outerRadius = 1f/2;
     
     //根据立体坐标获取Unity坐标
     //x,y,z 分别对应q,s(左上),r
-    public Vector3 GetUnityPos(Vector3 hexCoordinate)
+    public static Vector3 GetUnityPos(Vector3 hexCoordinate)
     {
         float unityY = (hexCoordinate.y - hexCoordinate.z) * Mathf.Sqrt(3) / 2 * outerRadius;
         float unityX = hexCoordinate.x * 1.5f * outerRadius;
@@ -44,19 +44,50 @@ public class HexMap : MonoBehaviour
     /// 根据Unity坐标获取
     /// </summary>
     /// <returns></returns>
-    public Vector3 GetHexPos(Vector3 unityPos)
+    public static Vector3 GetHexPos(Vector3 unityPos)
     {
         var q = unityPos.x * 2 / 3 / outerRadius;
         var s = (-1f / 3 * unityPos.x + Mathf.Sqrt(3) / 3 * unityPos.y)/outerRadius;
         var r = -q - s;
         return new Vector3(q, s, r);
     }
-    public Vector3 GetNearestUnityPos(float3 pos)
+    public static Vector3 GetNearestUnityPos(float3 pos)
     {
         var hexpos = GetHexPos(pos);
+        
         var a = Mathf.RoundToInt(hexpos.x);
+        var diffa = Mathf.Abs(hexpos.x - a);
         var b = Mathf.RoundToInt(hexpos.y);
+        var diffb = Mathf.Abs(hexpos.x - b);
         var c = Mathf.RoundToInt(hexpos.z);
+        var diffc = Mathf.Abs(hexpos.x - c);
+        if (diffa >= diffb)
+        {
+            if (diffa >= diffc)
+            {
+                Debug.Log(1);
+                a = -b - c;
+            }
+            else
+            {
+                Debug.Log(3);
+                c = -b - a;
+            }
+        }
+        else
+        {
+            if (diffb >= diffc)
+            {
+                Debug.Log(2);
+                b = -a - c;
+            }
+            else
+            {
+                Debug.Log(3);
+                c = -b - a;
+            }
+        }
+        
         return GetUnityPos(new Vector3(a, b, c));
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -28,12 +29,25 @@ public class LineMover : BaseMover
         }
     }
 
-    public override Vector2Int[] GetAccessiblePos(int x, int y)
+    public override void SetPos(Vector3 pos)
     {
-        return new Vector2Int[]
-        {
-            startXY,
-            endXY
-        };
+        Debug.LogError("暂时还没实现");
+        return;
+    }
+
+    public override float GetTByPos(Vector3 pos)
+    {
+        
+    }
+
+    public override Vector3 GetPosByT(float _t)
+    {
+        
+    }
+
+    public override void SetPosByT(float _t)
+    {
+        t = _t;
+        transform.position = GetPosByT(_t);
     }
 }

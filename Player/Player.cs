@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 目前正在选择的物体(预备成为下一个root)
     /// </summary>
-    public int activeIndex;
+    public int activeIndex = 1;
     //可达的地方会有的指示器
     [SerializeField] private GameObject accessibleIndicatorObj;
     private SpriteRenderer[] _accessibleIndicatorObjs;
@@ -33,7 +33,10 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            centerIndex = activeIndex;
+            movers[activeIndex].IsMoving = false;
+            movers[activeIndex].SetPos(HexMap.GetNearestUnityPos(movers[activeIndex].transform.position));
+            movers[centerIndex].IsMoving = true;
+            (centerIndex, activeIndex) = (activeIndex, centerIndex);
             for (int p = centerIndex, q = centerIndex; p >= 0 || q < movers.Count; --p, ++q)
             {
                 if (p >= 0)
