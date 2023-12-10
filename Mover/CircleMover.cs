@@ -7,10 +7,14 @@ using UnityEngine;
 using UnityEngine.Serialization;
 public class CircleMover : BaseMover
 {
+    private float radius;
+    /// <summary>
+    /// 指的是x的绝对差与y绝对差的和  比如(1,1) 与 (2,2) 半径即为2 (两相邻的格子半径就是2了)
+    /// </summary>
     [Header("半径")]
-    public float radius;
+    public int HexRadius;
     [Header("周期")]
-    public float period;
+    public int period;
     private Vector2 center = Vector2.zero;
     [Button]
     public void AdjustPos()
@@ -25,6 +29,7 @@ public class CircleMover : BaseMover
     // }
     protected override void Start()
     {
+        base.Start();
         stepLength = 2 / 50f / period;
     }
 
@@ -33,5 +38,22 @@ public class CircleMover : BaseMover
         if (!IsMoving)return;
         outPos = transform.position = parent.transform.position + new Vector3(Mathf.Sin(t*Mathf.PI)*radius, Mathf.Cos(t*Mathf.PI)*radius);
         t += stepLength;
+    }
+
+    public override Vector2Int[] GetAccessiblePos(int x, int y)
+    {
+        // List<Vector2Int> res = new List<Vector2Int>();
+        // res.Add(new Vector2Int(x,y+HexRadius));
+        // res.Add(new Vector2Int(x,y-HexRadius));
+        // res.Add(new Vector2Int(x-HexRadius,y));
+        // res.Add(new Vector2Int(x+HexRadius,y));
+        // for (int i = 1; i <= HexRadius; i++)
+        // {
+        //     res.Add(new Vector2Int(x-i,y-(HexRadius-i)));
+        //     res.Add(new Vector2Int(x+i,y-(HexRadius-i)));
+        //     res.Add(new Vector2Int(x-i,y+(HexRadius-i)));
+        //     res.Add(new Vector2Int(x+i,y+(HexRadius-i)));
+        // }
+        return new Vector2Int[0];
     }
 }

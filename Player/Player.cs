@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -15,6 +16,19 @@ public class Player : MonoBehaviour
     /// 目前正在选择的物体(预备成为下一个root)
     /// </summary>
     public int activeIndex;
+    //可达的地方会有的指示器
+    [SerializeField] private GameObject accessibleIndicatorObj;
+    private SpriteRenderer[] _accessibleIndicatorObjs;
+
+    private void Start()
+    {
+        //生成10个指示器,全部disable
+        _accessibleIndicatorObjs = Enumerable.Repeat(accessibleIndicatorObj, 10)
+            .Select(o => { GetComponent<SpriteRenderer>().enabled = false;
+                return GetComponent<SpriteRenderer>();
+            }).ToArray();
+    }
+    
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
