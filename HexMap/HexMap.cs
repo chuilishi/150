@@ -31,6 +31,12 @@ public class HexMap : MonoBehaviour
     public float size;
     public static float innerRadius = 0.866025f/2;
     public static float outerRadius = 1f/2;
+
+    [Button]
+    public void CreateCircle(Vector3 HexPos)
+    {
+        Instantiate(Circle, GetUnityPos(HexPos), Quaternion.identity);
+    }
     
     //根据立体坐标获取Unity坐标
     //x,y,z 分别对应q,s(左上),r
@@ -100,4 +106,5 @@ public class HexMap : MonoBehaviour
             Instantiate(Circle, GetNearestUnityPos(pos),quaternion.identity);
         }
     }
+    
 }

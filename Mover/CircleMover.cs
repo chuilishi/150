@@ -5,7 +5,6 @@ using EasyButtons;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Serialization;
-[RequireComponent(typeof(Rigidbody2D))]
 public class CircleMover : BaseMover
 {
     private float radius = HexMap.innerRadius*2;
@@ -16,10 +15,8 @@ public class CircleMover : BaseMover
     // public int HexRadius;
     [Header("周期")]
     public float period;
-    private float velocity;
     private Vector2 center = Vector2.zero;
-
-    private Rigidbody2D _rb;
+    
     [Button]
     public void AdjustPos()
     {
@@ -34,9 +31,7 @@ public class CircleMover : BaseMover
     protected override void Start()
     {
         base.Start();
-        velocity = 2 * Mathf.PI / period;
-        _rb = GetComponent<Rigidbody2D>();
-        stepLength = 2 / 50f / period;
+        stepLength = 0.02f / period;
     }
 
     public override void Move(Vector3 parentPos,ref Vector3 outPos)
@@ -46,30 +41,34 @@ public class CircleMover : BaseMover
             outPos = transform.position;
             return;
         }
-        var direction = new Vector2(-(transform.position - parentPos).y, (transform.position - parentPos).x).normalized;
-        _rb.velocity = direction * velocity;
         t += stepLength;
         outPos = transform.position = parentPos + GetPosByT(t);
     }
 
-    public override void SetPos(Vector3 pos)
+    public override void SetPosByPos(Vector3 pos)
     {
-        transform.position = GetPosByT(GetTByPos(pos));
+        t = GetTByPos(pos);
+        transform.position = GetPosByT(t);
     }
 
     public override float GetTByPos(Vector3 myPos)
     {
         Vector3 minus = myPos - parent.transform.position;
-        return Mathf.Atan2(minus.y,minus.x)/Mathf.PI;
+        // return
+        // Mathf.Atan2(minus.y, minus.x) < 0
+        //     ? 2 * Mathf.PI + Mathf.Atan2(minus.y, minus.x)
+        //     : Mathf.Atan2(minus.y, minus.x);
+        return Mathf.Atan2(minus.y, minus.x)/Mathf.PI;
     }
 
     public override Vector3 GetPosByT(float _t)
     {
-        return new Vector3(Mathf.Sin(_t*Mathf.PI)*radius, Mathf.Cos(_t*Mathf.PI)*radius);
+        return new Vector3(Mathf.Sin(_t*2*Mathf.PI)*radius, Mathf.Cos(_t*2*Mathf.PI)*radius);
     }
 
     public override void SetPosByT(float _t)
     {
-        
+        t = _t;
+        transform.position = GetPosByT(_t);
     }
 }

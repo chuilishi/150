@@ -29,7 +29,7 @@ public class LineMover : BaseMover
         }
     }
 
-    public override void SetPos(Vector3 pos)
+    public override void SetPosByPos(Vector3 pos)
     {
         Debug.LogError("暂时还没实现");
         return;
@@ -37,12 +37,13 @@ public class LineMover : BaseMover
 
     public override float GetTByPos(Vector3 pos)
     {
-        
+        Debug.LogError("暂时还没实现");
+        return 0;
     }
 
     public override Vector3 GetPosByT(float _t)
     {
-        
+        return Vector3.Lerp(startPos, endPos, t);
     }
 
     public override void SetPosByT(float _t)
