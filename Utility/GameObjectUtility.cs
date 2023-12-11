@@ -5,11 +5,10 @@ using UnityEngine.UIElements;
 public class GameObjectUtility : MonoBehaviour
 {
     public static Transform CenterGameObj;
-    public static GameObject BaseMoverObj;
+    public static BaseMover BaseMoverObj;
     private void Awake()
     {
         CenterGameObj = new GameObject().transform;
-        BaseMoverObj = new GameObject();
-        BaseMoverObj.AddComponent<BaseMover>();
+        BaseMoverObj = new GameObject().AddComponent<BaseMover>();
     }
 }

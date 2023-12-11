@@ -30,16 +30,16 @@ public class Player : MonoBehaviour
         //     .Select(o => { GetComponent<SpriteRenderer>().enabled = false;
         //         return GetComponent<SpriteRenderer>();
         //     }).ToArray();
-        movers[centerIndex].parent = GameObjectUtility.CenterGameObj;
+        movers[centerIndex].parent = GameObjectUtility.BaseMoverObj;
         for (int i = 0; i < movers.Count; i++)
         {
-            if (movers[i].parent!=null)
+            if (movers[i].parent!=GameObjectUtility.BaseMoverObj)
             {
-                movers[i].parent = movers[centerIndex].transform;
+                movers[i].parent = movers[centerIndex];
             }
             else
             {
-                movers[i].parent = GameObjectUtility.CenterGameObj;
+                movers[i].parent = GameObjectUtility.BaseMoverObj;
             }
             movers[i].IsMoving = i!=centerIndex;
         }
@@ -48,16 +48,21 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            if(movers[activeIndex].GetNearestT()-movers[activeIndex].t>0.2f)return;
             movers[activeIndex].IsMoving = false;
-            movers[activeIndex].SetPosByPos(HexMap.GetNearestUnityPos(movers[activeIndex].transform.position));
-            // Instantiate(Circle, HexMap.GetNearestUnityPos(movers[activeIndex].transform.position), quaternion.identity);
-            movers[centerIndex].IsMoving = true;
+            //顺序很重要,移动的mover的t必须先确定
+            movers[activeIndex].SetPos(movers[activeIndex].GetNearestT());
             (centerIndex, activeIndex) = (activeIndex, centerIndex);
             for (int i = 0; i < movers.Count; i++)
             {
-                if(i==centerIndex)continue;
-                movers[i].parent = movers[centerIndex].transform;
+                if (i == centerIndex)
+                {
+                    movers[i].parent = GameObjectUtility.BaseMoverObj;
+                    continue;
+                }
+                movers[i].parent = movers[centerIndex];
             }
+            movers[activeIndex].IsMoving = true;
         }
     }
     private void FixedUpdate()
@@ -79,7 +84,7 @@ public class Player : MonoBehaviour
         // }
         foreach (var mover in movers)
         {
-            mover.Move(mover.parent.transform.position,ref parentPos);
+            mover.Move();
         }
     }
 }

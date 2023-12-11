@@ -15,60 +15,59 @@ public class CircleMover : BaseMover
     // public int HexRadius;
     [Header("周期")]
     public float period;
-    private Vector2 center = Vector2.zero;
-    
-    [Button]
-    public void AdjustPos()
+
+    public override float t
     {
-        if (parent != null)center = parent.transform.position;
-        transform.position = new Vector3(Mathf.Sin(t*Mathf.PI) * radius + center.x, Mathf.Cos(t*Mathf.PI) * radius + center.y);
+        get => _t;
+        set
+        {
+            _t = value > 6 ? value - 6 : value;
+        }
     }
-    //inspector中的值被修改后执行
-    // private void OnValidate()
-    // {
-    //     AdjustPos();
-    // }
+
+    /// <summary>
+    /// parent被设置时自动调整t的位置
+    /// </summary>
+    public override BaseMover parent
+    {
+        get => _parent;
+        set
+        {
+            //被设置为父物体
+            if (ReferenceEquals(value,GameObjectUtility.BaseMoverObj))
+            {
+                _parent = value;
+            }
+            //被设置为子物体
+            else
+            {
+                t = value.t+3;
+                _parent = value;
+            }
+        }
+    }
     protected override void Start()
     {
         base.Start();
-        stepLength = 0.02f / period;
+        _t = 0f;
+        stepLength = 0.02f / period * 6;
+    }
+    
+    public override void Move()
+    {
+        if (!IsMoving)return;
+        SetPos(t + stepLength);
     }
 
-    public override void Move(Vector3 parentPos,ref Vector3 outPos)
+    public override Vector3 GetPos(float curT)
     {
-        if (!IsMoving)
-        {
-            outPos = transform.position;
-            return;
-        }
-        t += stepLength;
-        outPos = transform.position = parentPos + GetPosByT(t);
+        return new Vector3(Mathf.Sin(t/3*Mathf.PI) * radius, Mathf.Cos(t/3*Mathf.PI) * radius);
     }
-
-    public override void SetPosByPos(Vector3 pos)
+    public override void SetPos(float curT)
     {
-        t = GetTByPos(pos);
-        transform.position = GetPosByT(t);
-    }
-
-    public override float GetTByPos(Vector3 myPos)
-    {
-        Vector3 minus = myPos - parent.transform.position;
-        // return
-        // Mathf.Atan2(minus.y, minus.x) < 0
-        //     ? 2 * Mathf.PI + Mathf.Atan2(minus.y, minus.x)
-        //     : Mathf.Atan2(minus.y, minus.x);
-        return Mathf.Atan2(minus.y, minus.x)/Mathf.PI;
-    }
-
-    public override Vector3 GetPosByT(float _t)
-    {
-        return new Vector3(Mathf.Sin(_t*2*Mathf.PI)*radius, Mathf.Cos(_t*2*Mathf.PI)*radius);
-    }
-
-    public override void SetPosByT(float _t)
-    {
-        t = _t;
-        transform.position = GetPosByT(_t);
+        t = curT;
+        transform.position = ReferenceEquals(parent, GameObjectUtility.BaseMoverObj)
+            ? GetPos(_t)
+            : parent.transform.position + GetPos(_t);
     }
 }

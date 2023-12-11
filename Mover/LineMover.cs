@@ -8,47 +8,36 @@ public class LineMover : BaseMover
     private Vector3 endPos;
     public Vector2Int endXY;
     public float speed;
-    
+    public override float t { get; set; }
+
+    public override BaseMover parent
+    {
+        get => _parent;
+        set
+        {
+            _parent = value;
+        }
+    }
+
     protected override void Start()
     {
         base.Start();
         startPos = transform.position;
     }
-    public override void Move(Vector3 parentPos, ref Vector3 outPos)
+
+    public override void Move()
     {
-        if (!IsMoving)
-        {
-            return;
-        }
-        t += stepLength/100*speed;
-        outPos = transform.position = (Vector2)parentPos + Vector2.Lerp(startPos, endPos, t);
-        if(t>=1)
-        {
-            t = 1;
-            IsMoving = false;
-        }
+        
+    }
+    
+
+    public override Vector3 GetPos(float curT)
+    {
+        throw new NotImplementedException();
     }
 
-    public override void SetPosByPos(Vector3 pos)
+    public override void SetPos(float curT)
     {
-        Debug.LogError("暂时还没实现");
-        return;
-    }
-
-    public override float GetTByPos(Vector3 pos)
-    {
-        Debug.LogError("暂时还没实现");
-        return 0;
-    }
-
-    public override Vector3 GetPosByT(float _t)
-    {
-        return Vector3.Lerp(startPos, endPos, t);
-    }
-
-    public override void SetPosByT(float _t)
-    {
-        t = _t;
-        transform.position = GetPosByT(_t);
+        throw new NotImplementedException();
     }
 }
