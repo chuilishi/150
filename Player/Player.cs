@@ -30,61 +30,49 @@ public class Player : MonoBehaviour
         //     .Select(o => { GetComponent<SpriteRenderer>().enabled = false;
         //         return GetComponent<SpriteRenderer>();
         //     }).ToArray();
-        movers[centerIndex].parent = GameObjectUtility.BaseMoverObj;
         for (int i = 0; i < movers.Count; i++)
         {
-            if (movers[i].parent!=GameObjectUtility.BaseMoverObj)
+            movers[i].parent = GameObjectUtility.BaseMoverObj;
+            if (i!=centerIndex)
             {
-                movers[i].parent = movers[centerIndex];
-            }
-            else
-            {
-                movers[i].parent = GameObjectUtility.BaseMoverObj;
+                movers[i].SetParent(movers[centerIndex]);
             }
             movers[i].IsMoving = i!=centerIndex;
         }
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.J))
         {
-            if(movers[activeIndex].GetNearestT()-movers[activeIndex].t>0.2f)return;
-            movers[activeIndex].IsMoving = false;
-            //顺序很重要,移动的mover的t必须先确定
-            movers[activeIndex].SetPos(movers[activeIndex].GetNearestT());
-            (centerIndex, activeIndex) = (activeIndex, centerIndex);
-            for (int i = 0; i < movers.Count; i++)
-            {
-                if (i == centerIndex)
-                {
-                    movers[i].parent = GameObjectUtility.BaseMoverObj;
-                    continue;
-                }
-                movers[i].parent = movers[centerIndex];
-            }
-            movers[activeIndex].IsMoving = true;
+            Hit(false);
+        }
+        else if(Input.GetKeyDown(KeyCode.F))
+        {
+            Hit(true);
         }
     }
     private void FixedUpdate()
     {
-        var parentPos = Vector3.zero;
-        parentPos = movers[centerIndex].transform.position;
-        // Vector3 pParent = parentPos;
-        // Vector3 qParent = parentPos;
-        // for (int p = centerIndex, q = centerIndex; p >= 0 || q < movers.Count; --p, ++q)
-        // {
-        //     if (p >= 0)
-        //     {
-        //         movers[p].Move(pParent,ref pParent);
-        //     }
-        //     if (q < movers.Count)
-        //     {
-        //         movers[q].Move(qParent,ref qParent);
-        //     }
-        // }
-        foreach (var mover in movers)
+        movers[centerIndex].Move(Vector3.zero);
+    }
+
+    private void Hit(bool direction)
+    {
+        if(movers[activeIndex].GetNearestT()-movers[activeIndex].t>0.2f)return;
+        movers[centerIndex].direction = direction;
+        movers[activeIndex].IsMoving = false;
+        //顺序很重要,移动的mover的t必须先确定
+        movers[activeIndex].SetPos(movers[activeIndex].GetNearestT());
+        (centerIndex, activeIndex) = (activeIndex, centerIndex);
+        for (int i = 0; i < movers.Count; i++)
         {
-            mover.Move();
+            if (i == centerIndex)
+            {
+                movers[i].SetParent(GameObjectUtility.BaseMoverObj);
+                continue;
+            }
+            movers[i].SetParent(movers[centerIndex]);
+            movers[i].IsMoving = true;
         }
     }
 }

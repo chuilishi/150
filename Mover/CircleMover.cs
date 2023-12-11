@@ -7,7 +7,8 @@ using UnityEngine;
 using UnityEngine.Serialization;
 public class CircleMover : BaseMover
 {
-    private float radius = HexMap.innerRadius*2;
+    // private float radius = HexMap.innerRadius*2;
+    public float radius ;
     /// <summary>
     /// 指的是x的绝对差与y绝对差的和  比如(1,1) 与 (2,2) 半径即为2 (两相邻的格子半径就是2了)
     /// </summary>
@@ -15,13 +16,15 @@ public class CircleMover : BaseMover
     // public int HexRadius;
     [Header("周期")]
     public float period;
-
+    
     public override float t
     {
         get => _t;
         set
         {
-            _t = value > 6 ? value - 6 : value;
+            if (value < 0) _t = value + 6;
+            else if (value > 6) _t = value - 6;
+            else _t = value;
         }
     }
 
@@ -50,13 +53,42 @@ public class CircleMover : BaseMover
     {
         base.Start();
         _t = 0f;
-        stepLength = 0.02f / period * 6;
+        stepLength = 0.1f;
+        stepLength = stepLength*0.02f / period * 6;
+        
     }
     
-    public override void Move()
+    public override void Move(bool d,Vector3 delta)
     {
+        foreach (var child in childMovers)
+        {
+            child.Move(Vector3.zero);
+        }
         if (!IsMoving)return;
-        SetPos(t + stepLength);
+        direction = d;
+        var myDelta = GetDelta(direction ? t + stepLength : t - stepLength);
+        t += direction?stepLength : -stepLength;
+        transform.Translate(delta+myDelta);
+        foreach (var child in childMovers)
+        {
+            child.Move(delta+myDelta);
+        }
+    }
+
+    public override void Move(Vector3 delta)
+    {
+        foreach (var child in childMovers)
+        {
+            child.Move(Vector3.zero);
+        }
+        if (!IsMoving)return;
+        var myDelta = GetDelta(direction ? t + stepLength : t - stepLength);
+        t += direction?stepLength : -stepLength;
+        transform.Translate(delta+myDelta);
+        foreach (var child in childMovers)
+        {
+            child.Move(delta+myDelta);
+        }
     }
 
     public override Vector3 GetPos(float curT)
@@ -70,4 +102,10 @@ public class CircleMover : BaseMover
             ? GetPos(_t)
             : parent.transform.position + GetPos(_t);
     }
+    //
+    // public override Vector3 GetDelta(float newT)
+    // {
+    //     t = newT;
+    //     return GetPos(newT) - transform.position;
+    // }
 }

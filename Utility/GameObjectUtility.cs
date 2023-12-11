@@ -9,6 +9,6 @@ public class GameObjectUtility : MonoBehaviour
     private void Awake()
     {
         CenterGameObj = new GameObject().transform;
-        BaseMoverObj = new GameObject().AddComponent<BaseMover>();
+        BaseMoverObj = new GameObject().AddComponent<CircleMover>();
     }
 }
