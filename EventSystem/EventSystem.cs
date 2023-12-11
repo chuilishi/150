@@ -12,7 +12,7 @@ abstract class IRegisterations
 
 class Registerations<T>: IRegisterations
 {
-    public Action<T> OnReceives = obj => { };
+    public new Action<T> OnReceives = obj => { };
 }
 public static class EventSystem
 {

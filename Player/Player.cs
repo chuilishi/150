@@ -25,20 +25,36 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        // //生成10个指示器,全部disable
-        // _accessibleIndicatorObjs = Enumerable.Repeat(accessibleIndicatorObj, 10)
-        //     .Select(o => { GetComponent<SpriteRenderer>().enabled = false;
-        //         return GetComponent<SpriteRenderer>();
-        //     }).ToArray();
+        #region 对parent初始化
+
         for (int i = 0; i < movers.Count; i++)
         {
-            movers[i].parent = GameObjectUtility.BaseMoverObj;
-            if (i!=centerIndex)
+            if (movers[i].parent == null)
             {
-                movers[i].SetParent(movers[centerIndex]);
+                if (i == centerIndex)
+                {
+                    movers[i].parent = GameObjectUtility.BaseMoverObj;
+                    GameObjectUtility.BaseMoverObj.childMovers.Add(movers[i]);
+                }
+                else
+                {
+                    movers[i].parent = movers[centerIndex];
+                    movers[centerIndex].childMovers.Add(movers[i]);
+                }
+            }
+            else
+            {
+                movers[i].parent.childMovers.Add(movers[i]);
             }
             movers[i].IsMoving = i!=centerIndex;
         }
+        //初始化
+        foreach (var mover in movers)
+        {
+            mover.SetParent(mover.parent);
+        }
+        #endregion
+        
     }
     private void Update()
     {
@@ -53,7 +69,11 @@ public class Player : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        movers[centerIndex].Move(Vector3.zero);
+        foreach (var mover in movers)
+        {
+            mover.hasMoved = false;
+        }
+        movers[centerIndex].Move();
     }
 
     private void Hit(bool direction)

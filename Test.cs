@@ -6,9 +6,10 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
+    public GameObject circle;
     [Button]
-    public void CreateNum()
+    public void Create(Vector3 coordinate)
     {
-        
+        Instantiate(circle,HexMap.GetUnityPos(coordinate),Quaternion.identity);
     }
 }

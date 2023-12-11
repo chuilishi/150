@@ -33,19 +33,19 @@ public class CircleMover : BaseMover
     /// </summary>
     public override BaseMover parent
     {
-        get => _parent;
+        get => m_parent;
         set
         {
             //被设置为父物体
             if (ReferenceEquals(value,GameObjectUtility.BaseMoverObj))
             {
-                _parent = value;
+                m_parent = value;
             }
             //被设置为子物体
             else
             {
                 t = value.t+3;
-                _parent = value;
+                m_parent = value;
             }
         }
     }
@@ -57,40 +57,6 @@ public class CircleMover : BaseMover
         stepLength = stepLength*0.02f / period * 6;
         
     }
-    
-    public override void Move(bool d,Vector3 delta)
-    {
-        foreach (var child in childMovers)
-        {
-            child.Move(Vector3.zero);
-        }
-        if (!IsMoving)return;
-        direction = d;
-        var myDelta = GetDelta(direction ? t + stepLength : t - stepLength);
-        t += direction?stepLength : -stepLength;
-        transform.Translate(delta+myDelta);
-        foreach (var child in childMovers)
-        {
-            child.Move(delta+myDelta);
-        }
-    }
-
-    public override void Move(Vector3 delta)
-    {
-        foreach (var child in childMovers)
-        {
-            child.Move(Vector3.zero);
-        }
-        if (!IsMoving)return;
-        var myDelta = GetDelta(direction ? t + stepLength : t - stepLength);
-        t += direction?stepLength : -stepLength;
-        transform.Translate(delta+myDelta);
-        foreach (var child in childMovers)
-        {
-            child.Move(delta+myDelta);
-        }
-    }
-
     public override Vector3 GetPos(float curT)
     {
         return new Vector3(Mathf.Sin(t/3*Mathf.PI) * radius, Mathf.Cos(t/3*Mathf.PI) * radius);
